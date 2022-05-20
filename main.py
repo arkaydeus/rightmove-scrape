@@ -67,7 +67,9 @@ def post_url(rightmove: RightMove):
     articles: List[PageElement] = soup.find_all("article")
 
     try:
-        price = list(articles[1].stripped_strings)[0]
+        price = [item for item in list(articles[1].stripped_strings) if item[0] == "£"][
+            0
+        ]
     except:
         return {"status": "cannot find price"}
 
