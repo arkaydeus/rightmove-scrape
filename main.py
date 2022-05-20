@@ -1,6 +1,6 @@
 import json
 from optparse import Option
-from typing import Optional
+from typing import List, Optional
 from urllib import response
 
 import requests
@@ -63,11 +63,16 @@ def post_url(rightmove: RightMove):
 
     soup = BeautifulSoup(response.text, "html.parser")
     street: Optional[PageElement] = soup.find("h1", {"itemprop": "streetAddress"})
-    price: Optional[PageElement] = soup.find("div", {"style": "font-size:24px"})
+
+    articles: List[PageElement] = soup.find_all("article")
+
+    try:
+        price = list(articles[1].stripped_strings)[0]
+    except:
+        return {"status": "cannot find price"}
 
     if street and price:
-        return {"street": street.get_text(), "price": price.get_text()}
+        return {"street": street.get_text(), "price": price}
 
     else:
         return {"status": "parsing error"}
-    # return load_data()
