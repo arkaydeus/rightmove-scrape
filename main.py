@@ -79,7 +79,7 @@ def post_url(rightmove: RightMove):
     return rightmove_data(rightmove.url)
 
 
-@app.get("/rightmove/{url:path}")
+@app.get("/rightmove/{url}")
 def get_url(url: str):
     headers = {"Cache-Control": "max-age=0, s-maxage=86400"}
     return JSONResponse(content=rightmove_data(url), headers=headers)
