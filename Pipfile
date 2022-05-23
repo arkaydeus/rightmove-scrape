@@ -16,3 +16,6 @@ ipykernel = "*"
 
 [requires]
 python_version = "3.9"
+
+[scripts]
+server="uvicorn main:app --reload"

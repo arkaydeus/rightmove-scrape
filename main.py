@@ -1,7 +1,7 @@
 import json
 from optparse import Option
 from typing import List, Optional
-from urllib import response
+from urllib.parse import unquote_plus
 
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -15,12 +15,6 @@ app = FastAPI()
 #  The following allows the vercel hosted version to accept requests that are not originating from Vercel
 #  in a browser
 
-#  CORS origins
-# origins = [
-#     "http://localhost:3000",
-#     "https://localhost:3000",
-#     "https://perfections-web.vercel.app",
-# ]
 
 # Add middleware adapter to prevent blocking
 app.add_middleware(
@@ -55,9 +49,8 @@ def read_root():
     return {"status": "live"}
 
 
-@app.post("/rightmove/")
-def post_url(rightmove: RightMove):
-    response = requests.get(rightmove.url)
+def rightmove_data(url: str):
+    response = requests.get(url)
     if not response.ok:
         return {"status": "failed"}
 
@@ -78,3 +71,13 @@ def post_url(rightmove: RightMove):
 
     else:
         return {"status": "parsing error"}
+
+
+@app.post("/rightmove/")
+def post_url(rightmove: RightMove):
+    return rightmove_data(rightmove.url)
+
+
+@app.get("/rightmove/")
+def get_url(url: str):
+    return rightmove_data(url)
