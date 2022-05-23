@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 from bs4.element import PageElement
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -78,6 +79,7 @@ def post_url(rightmove: RightMove):
     return rightmove_data(rightmove.url)
 
 
-@app.get("/rightmove/")
+@app.get("/rightmove/{url:path}")
 def get_url(url: str):
-    return rightmove_data(url)
+    headers = {"Cache-Control": "max-age=0, s-maxage=86400"}
+    return JSONResponse(content=rightmove_data(url), headers=headers)
