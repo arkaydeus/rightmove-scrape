@@ -56,7 +56,15 @@ def rightmove_data(url: str):
         return {"status": "failed"}
 
     soup = BeautifulSoup(response.text, "html.parser")
-    street: Optional[PageElement] = soup.find("h1", {"itemprop": "streetAddress"})
+    street: Optional[str] = None
+    try:
+        street_element: Optional[PageElement] = soup.find(
+            "h1", {"itemprop": "streetAddress"}
+        )
+        if street_element:
+            street = street_element.get_text()
+    except:
+        return {"status": "cannot find street"}
 
     articles: List[PageElement] = soup.find_all("article")
 
@@ -67,8 +75,21 @@ def rightmove_data(url: str):
     except:
         return {"status": "cannot find price"}
 
-    if street and price:
-        return {"street": street.get_text(), "price": price}
+    try:
+        tel = list(soup.select("a[href*=tel]")[0].stripped_strings)[2]
+    except:
+        return {"status": "cannot phone number"}
+
+    agent: Optional[str] = None
+    try:
+        agent_element: Optional[PageElement] = soup.find("p", text="MARKETED BY")
+        if agent_element and agent_element.next_sibling:
+            agent = list(agent_element.next_sibling.stripped_strings)[0]
+    except:
+        return {"status": "cannot find agent"}
+
+    if all([street, price, tel, agent]):
+        return {"street": street, "price": price, "agent": agent, "tel": tel}
 
     else:
         return {"status": "parsing error"}

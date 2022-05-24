@@ -13,6 +13,7 @@ requests = "*"
 [dev-packages]
 black = "*"
 ipykernel = "*"
+notebook = "*"
 
 [requires]
 python_version = "3.9"
